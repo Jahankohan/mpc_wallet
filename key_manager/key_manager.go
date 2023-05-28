@@ -5,14 +5,12 @@ import (
 	"crypto/rand"
 	"fmt"
 	"log"
-	"strings"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/secp256k1"
-	"github.com/tyler-smith/go-bip39"
+	"github.com/hashicorp/vault/shamir"
 
-	d "github.com/Jahankohan/mpc_wallet/deploy"
+	d "github.com/Jahankohan/mpc_wallet/middleware"
 	u "github.com/Jahankohan/mpc_wallet/utils"
 )
 
@@ -26,27 +24,24 @@ func (km *KeyManager) CreatePrivateKey() *ecdsa.PrivateKey {
 	return privateKey
 }
 
-func (km *KeyManager) SplitToShares(privateKey *ecdsa.PrivateKey) []string {
-	privateKeyBytes := crypto.FromECDSA(privateKey)
-	fmt.Printf("Generated private key: %s\n", hexutil.Encode(privateKeyBytes))
-
-	// Generate 24-word BIP39 mnemonic for secret sharing
-	entropy, _ := bip39.NewEntropy(256)
-	mnemonic, _ := bip39.NewMnemonic(entropy)
-
-	// Split mnemonic into 3 shares
-	shares := make([]string, 3)
-	words := strings.Split(mnemonic, " ")
-	for i := 0; i < 3; i++ {
-		start := i * 8
-		end := start + 8
-		shareWords := words[start:end]
-		shares[i] = strings.Join(shareWords, " ")
-		fmt.Printf("Share %d: %s\n", i+1, shares[i])
+func (km *KeyManager) SplitToShares(privateKey *ecdsa.PrivateKey, minimumShares int, totalShares int) ([][]byte, error) {
+	if privateKey == nil {
+		return nil, fmt.Errorf("private key cannot be nil")
+	}
+	if minimumShares < 1 || minimumShares > totalShares {
+		return nil, fmt.Errorf("invalid share count: minimum %d, total %d", minimumShares, totalShares)
 	}
 
-	return shares
+	privateKeyBytes := crypto.FromECDSA(privateKey)
+	
+	shares, err := shamir.Split(privateKeyBytes, totalShares, minimumShares)
+	if err != nil {
+		return nil, fmt.Errorf("failed to split private key: %v", err)
+	}
+
+	return shares, nil
 }
+
 
 func createShareID(userID string, shareIndex int) [32]byte {
 	shareIDString := fmt.Sprintf("%s_share%d", userID, shareIndex)
@@ -69,12 +64,21 @@ func (km *KeyManager) StoreSharesToTheBlockchain(userID string, shares []string)
 	}
 }
 
-func (km *KeyManager) retrieveShares() []string {
-	// Implement the logic to retrieve the shares from the KeyShareStorage contracts on each network
-	return nil
-}
 
-func (km *KeyManager) reconstructThePrivateKey(shares []string) *ecdsa.PrivateKey {
-	// Implement the logic to reconstruct the private key from the shares
-	return nil
+func (km *KeyManager) ReconstructPrivateKey(shares [][]byte) (*ecdsa.PrivateKey, error) {
+	if len(shares) < 2 {
+		return nil, fmt.Errorf("at least two shares are required to reconstruct the private key")
+	}
+
+	privateKeyBytes, err := shamir.Combine(shares)
+	if err != nil {
+		return nil, fmt.Errorf("failed to reconstruct private key: %v", err)
+	}
+
+	privateKey, err := crypto.ToECDSA(privateKeyBytes)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert byte slice to ECDSA private key: %v", err)
+	}
+
+	return privateKey, nil
 }
