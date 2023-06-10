@@ -10,8 +10,8 @@ import (
 	"github.com/ethereum/go-ethereum/crypto/secp256k1"
 	"github.com/hashicorp/vault/shamir"
 
-	d "github.com/Jahankohan/mpc_wallet/middleware"
-	u "github.com/Jahankohan/mpc_wallet/utils"
+	"github.com/Jahankohan/mpc_wallet/config"
+	"github.com/Jahankohan/mpc_wallet/middleware"
 )
 
 type KeyManager struct{}
@@ -33,7 +33,6 @@ func (km *KeyManager) SplitToShares(privateKey *ecdsa.PrivateKey, minimumShares 
 	}
 
 	privateKeyBytes := crypto.FromECDSA(privateKey)
-	
 	shares, err := shamir.Split(privateKeyBytes, totalShares, minimumShares)
 	if err != nil {
 		return nil, fmt.Errorf("failed to split private key: %v", err)
@@ -52,15 +51,12 @@ func createShareID(userID string, shareIndex int) [32]byte {
 
 
 
-func (km *KeyManager) StoreSharesToTheBlockchain(userID string, shares []string) {
-	// Store each share into KeyShareStorage contracts on different networks
-	// Replace with actual contract addresses and private keys for each network
-
+func (km *KeyManager) StoreSharesToTheBlockchain(userID string, shares []string, networks []config.NetworkConfiguration) {
 	for i, share := range shares {
 		shareID := createShareID(userID, i+1)
-		d.StoreShares(u.LoadConfig().Local, shareID, share)
-		d.StoreShares(u.LoadConfig().POLYTestnet, shareID, share)
-		d.StoreShares(u.LoadConfig().AVATestnet, shareID, share)
+		for _, network := range networks {
+			middleware.StoreShares(network, shareID, share)
+		}
 	}
 }
 
