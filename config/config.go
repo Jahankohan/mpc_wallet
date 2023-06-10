@@ -1,5 +1,7 @@
 package config
 
+import "math/big"
+
 type Configurations struct {
 	Local			NetworkConfiguration
 	ETHTestnet		NetworkConfiguration
@@ -14,5 +16,5 @@ type NetworkConfiguration struct {
 	PrivateKey		string
 	Network			string
 	DeployedAddress	string
-	ChainId			int
+	ChainId			*big.Int
 }
