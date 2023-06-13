@@ -45,18 +45,10 @@ func GetOwnerAuth(conf config.NetworkConfiguration) *bind.TransactOpts {
 }
 
 func DeployAllContracts(is_testnet bool) ([]NetworkConnections, error){
-    
-    var mainnet = []config.NetworkConfiguration {
-        u.LoadConfig().ETHMainnet,
-        u.LoadConfig().POLYMainnet,
-        u.LoadConfig().AVAMainnet,
-    }
+    configuration := u.LoadConfig()
 
-    var testnet = []config.NetworkConfiguration {
-        u.LoadConfig().Local,
-        u.LoadConfig().AVATestnet,
-        u.LoadConfig().POLYTestnet,
-    }
+    var mainnet = u.GetNetworkConfigurations(configuration, false)
+    var testnet = u.GetNetworkConfigurations(configuration, true)
 
     var deployedConfigurations = []NetworkConnections {}
 	
