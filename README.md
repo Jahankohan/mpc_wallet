@@ -22,74 +22,78 @@ MPC Custodial Wallet is an open-source custodial wallet service that utilizes Mu
 
 1. Clone the repository:
 
-    ```sh
-    git clone https://github.com/Jahankohan/mpc_wallet.git
-    ```
+   ```sh
+   git clone https://github.com/Jahankohan/mpc_wallet.git
+   ```
 
 2. Change to the project directory:
 
-    ```sh
-    cd mpc_wallet
-    ```
+   ```sh
+   cd mpc_wallet
+   ```
 
 3. Install the required Go packages:
 
-    ```sh
-    go mod download
-    ```
+   ```sh
+   go mod download
+   ```
 
 4. Set up the configuration in `config.yml`:
 
-    ```yaml
-    local:
-      privatekey: "YOUR_ETHEREUM_PRIVATE_KEY"
-      network: "http://localhost:8545"
-      deployedAddress: "YOUR_SMART_CONTRACT_ADDRESS"
-      chainid: 1337
+   ```yaml
+   networks:
+     local:
+       network: "http://localhost:8545"
+       deployedAddress: "YOUR_SMART_CONTRACT_ADDRESS"
+       chainid: 1337
 
-    ethTestnet:
-      privatekey: "YOUR_ETHEREUM_TESTNET_PRIVATE_KEY"
-      network: "YOUR_ETHEREUM_TESTNET_RPC_URL"
-      deployedAddress: "YOUR_SMART_CONTRACT_ADDRESS"
-      chainid: "11155111"
+     ethTestnet:
+       network: "YOUR_ETHEREUM_TESTNET_RPC_URL"
+       deployedAddress: "YOUR_SMART_CONTRACT_ADDRESS"
+       chainid: "11155111"
 
-    ethMainnet:
-      privatekey: "YOUR_ETHEREUM_MAINNET_PRIVATE_KEY"
-      network: "YOUR_ETHEREUM_MAINNET_RPC_URL"
-      deployedAddress: "YOUR_SMART_CONTRACT_ADDRESS"
-      chainid: "1"
+     ethMainnet:
+       network: "YOUR_ETHEREUM_MAINNET_RPC_URL"
+       deployedAddress: "YOUR_SMART_CONTRACT_ADDRESS"
+       chainid: "1"
 
-    polyTestnet:
-      privatekey: "YOUR_POLYGON_TESTNET_PRIVATE_KEY"
-      network: "YOUR_POLYGON_TESTNET_RPC_URL"
-      deployedAddress: "YOUR_SMART_CONTRACT_ADDRESS"
-      chainid: "80001"
+     polyTestnet:
+       network: "YOUR_POLYGON_TESTNET_RPC_URL"
+       deployedAddress: "YOUR_SMART_CONTRACT_ADDRESS"
+       chainid: "80001"
 
-    polyMainnet:
-      privatekey: "YOUR_POLYGON_MAINNET_PRIVATE_KEY"
-      network: "YOUR_POLYGON_MAINNET_RPC_URL"
-      deployedAddress: "YOUR_SMART_CONTRACT_ADDRESS"
-      chainid: "137"
+     polyMainnet:
+       network: "YOUR_POLYGON_MAINNET_RPC_URL"
+       deployedAddress: "YOUR_SMART_CONTRACT_ADDRESS"
+       chainid: "137"
 
-    avaTestnet:
-      privatekey: "YOUR_AVALANCHE_TESTNET_PRIVATE_KEY"
-      network: "YOUR_AVALANCHE_TESTNET_RPC_URL"
-      deployedAddress: "YOUR_SMART_CONTRACT_ADDRESS"
-      chainid: "43113"
+     avaTestnet:
+       network: "YOUR_AVALANCHE_TESTNET_RPC_URL"
+       deployedAddress: "YOUR_SMART_CONTRACT_ADDRESS"
+       chainid: "43113"
 
-    avaMainnet:
-      privatekey: "YOUR_AVALANCHE_MAINNET_PRIVATE_KEY"
-      network: "YOUR_AVALANCHE_MAINNET_RPC_URL"
-      deployedAddress: "YOUR_SMART_CONTRACT_ADDRESS"
-      chainid: "43114"
-    ```
+     avaMainnet:
+       network: "YOUR_AVALANCHE_MAINNET_RPC_URL"
+       deployedAddress: "YOUR_SMART_CONTRACT_ADDRESS"
+       chainid: "43114"
+   ```
 
+5. Set up environment variables for private keys. The environment variable names should be in uppercase and follow the pattern `PRIVATEKEY_<NETWORKTYPE>`.
 
-5. Run the server:
+   For example:
 
-    ```sh
-    go run main.go
-    ```
+   ```
+   PRIVATEKEY=242e8a1be01eb4142083e5f2491600c53a1af215840f6800336b1a27c123b927
+   ...
+   ```
+
+   You can place them in a `.env` file in the root directory of the project. This file should be added to `.gitignore` to ensure it doesn't get committed to your version control system.
+
+6. Run the server:
+
+   ```sh
+   go run main.go
+   ```
 
 Your server should now be running at `http://localhost:8080`.
 
