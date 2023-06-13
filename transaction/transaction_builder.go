@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/big"
 
+	"github.com/Jahankohan/mpc_wallet/config"
 	"github.com/Jahankohan/mpc_wallet/key_manager"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -25,9 +26,9 @@ func NewTransactionBuilder(client *ethclient.Client, keyManager *key_manager.Key
 	}
 }
 
-func (tb *TransactionBuilder) SendRawTransaction(userID string, toAddress common.Address, value *big.Int, data []byte) (string, error) {
+func (tb *TransactionBuilder) SendRawTransaction(userID string, confs []config.NetworkConfiguration, toAddress common.Address, value *big.Int, data []byte) (string, error) {
 	// Retrieve shares and reconstruct the private key using KeyManager
-	shares, err := tb.keyManager.RetrieveShares(userID)
+	shares, err := tb.keyManager.RetrieveAllShares(confs, userID)
 	if err != nil {
 		return "", fmt.Errorf("failed to retrieve key shares: %v", err)
 	}

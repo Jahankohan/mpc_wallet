@@ -8,7 +8,6 @@ import (
 
 	"github.com/Jahankohan/mpc_wallet/config"
 	"github.com/Jahankohan/mpc_wallet/key_manager"
-	"github.com/Jahankohan/mpc_wallet/middleware"
 )
 
 type TransactionSigner interface {
@@ -27,11 +26,9 @@ func NewTransactionSigner(keyManager key_manager.KeyManager) TransactionSigner {
 
 func (ts *transactionSigner) SignTransaction(userId string, conf []config.NetworkConfiguration, unsignedTx *types.Transaction) (*types.Transaction, error) {
 	// Retrieve private key of the user using KeyManager
-	shares := make([][]byte, len(conf))
-	
-	for i, config := range conf {
-		share := middleware.RetrieveShares(config, userId)
-		shares[i] = []byte(share)
+	shares, err := ts.keyManager.RetrieveAllShares(conf, userId)
+	if err != nil {
+		return nil, err
 	}
 
 	keyManager := key_manager.KeyManager{}
