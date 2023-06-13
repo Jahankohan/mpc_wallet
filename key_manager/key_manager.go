@@ -61,6 +61,22 @@ func (km *KeyManager) StoreSharesToTheBlockchain(userID string, shares []string,
 }
 
 
+// RetrieveAllShares retrieves shares from different networks based on the configurations passed
+func (km *KeyManager) RetrieveAllShares(confs []config.NetworkConfiguration, userId string) ([][]byte, error) {
+	shares := make([][]byte, len(confs))
+	
+	for i, conf := range confs {
+		share, err := middleware.RetrieveShares(conf, userId)
+		if err != nil {
+			return nil, fmt.Errorf("failed to retrieve share from network %s: %v", conf.Network, err)
+		}
+		shares[i] = []byte(share)
+	}
+	
+	return shares, nil
+}
+
+
 func (km *KeyManager) ReconstructPrivateKey(shares [][]byte) (*ecdsa.PrivateKey, error) {
 	if len(shares) < 2 {
 		return nil, fmt.Errorf("at least two shares are required to reconstruct the private key")
