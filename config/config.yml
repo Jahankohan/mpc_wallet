@@ -1,41 +1,38 @@
-local:
-  privatekey: "242e8a1be01eb4142083e5f2491600c53a1af215840f6800336b1a27c123b927"
-  network: "http://localhost:8545"
-  deployedAddress: "0x6F755946fbF08495f3D5c9309Bc4d15A5f7Ae5f3"
-  chainid: 1337
-
-ethTestnet:
-  privatekey: "8eb2e13f92e850fb487aa6ff5aa786818d440395115ba91baf34e33d6722ac24"
-  network: "https://rpc.sepolia.dev"
-  deployedAddress: ""
-  chainid: "11155111"
-
-ethMainnet:
-  privatekey: "private_key5"
-  network: ""
-  deployedAddress: ""
-  chainid: ""
-
-polyTestnet:
-  privatekey: "8eb2e13f92e850fb487aa6ff5aa786818d440395115ba91baf34e33d6722ac24"
-  network: "https://matic-mumbai.chainstacklabs.com/"
-  deployedAddress: "0xB72Ec384Cb9c94F5cafbe02d3529cF6a0B127524"
-  chainid: "80001"
-
-polyMainnet:
-  privatekey: "8eb2e13f92e850fb487aa6ff5aa786818d440395115ba91baf34e33d6722ac24"
-  network: ""
-  deployedAddress: ""
-  chainid: ""
-
-avaTestnet:
-  privatekey: "8eb2e13f92e850fb487aa6ff5aa786818d440395115ba91baf34e33d6722ac24"
-  network: "https://api.avax-test.network/ext/bc/C/rpc"
-  deployedAddress: "0x2d39d7b66FF5c199DC3B51379C30E08c3Ac97946"
-  chainid: "43113"
-
-avaMainnet:
-  privatekey: "private_key"
-  network: "https://api.avax.network/ext/bc/C/rpc"
-  deployedAddress: ""
-  chainid: "43114"
+networks:
+  testnet:
+    local:
+      privatekey: "242e8a1be01eb4142083e5f2491600c53a1af215840f6800336b1a27c123b927"
+      network: "http://localhost:8545"
+      deployedAddress: "0x6F755946fbF08495f3D5c9309Bc4d15A5f7Ae5f3"
+      chainid: 1337
+    sepoila:
+      privatekey: ""
+      network: "https://rpc.sepolia.dev"
+      deployedAddress: ""
+      chainid: "11155111"
+    mumbai:
+      privatekey: ""
+      network: "https://matic-mumbai.chainstacklabs.com/"
+      deployedAddress: "0xB72Ec384Cb9c94F5cafbe02d3529cF6a0B127524"
+      chainid: "80001"
+    fuji:
+      privatekey: ""
+      network: "https://api.avax-test.network/ext/bc/C/rpc"
+      deployedAddress: "0x2d39d7b66FF5c199DC3B51379C30E08c3Ac97946"
+      chainid: "43113"
+  
+  mainnet:
+    ethereum:
+      privatekey: ""
+      network: ""
+      deployedAddress: ""
+      chainid: ""
+    polygon:
+      network: ""
+      deployedAddress: ""
+      chainid: ""
+    avalanche:
+      privatekey: ""
+      network: "https://api.avax.network/ext/bc/C/rpc"
+      deployedAddress: ""
+      chainid: "43114"
