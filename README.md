@@ -42,43 +42,42 @@ MPC Custodial Wallet is an open-source custodial wallet service that utilizes Mu
 
    ```yaml
    networks:
-  testnet:
-    local:
-      privatekey: ""
-      network: "http://localhost:8545"
-      deployedAddress: ""
-      chainid: 1337
-    sepoila:
-      privatekey: ""
-      network: "https://rpc.sepolia.dev"
-      deployedAddress: ""
-      chainid: "11155111"
-    mumbai:
-      privatekey: ""
-      network: "https://matic-mumbai.chainstacklabs.com/"
-      deployedAddress: "0xB72Ec384Cb9c94F5cafbe02d3529cF6a0B127524"
-      chainid: "80001"
-    fuji:
-      privatekey: ""
-      network: "https://api.avax-test.network/ext/bc/C/rpc"
-      deployedAddress: "0x2d39d7b66FF5c199DC3B51379C30E08c3Ac97946"
-      chainid: "43113"
-  
-  mainnet:
-    ethereum:
-      privatekey: ""
-      network: ""
-      deployedAddress: ""
-      chainid: ""
-    polygon:
-      network: ""
-      deployedAddress: ""
-      chainid: ""
-    avalanche:
-      privatekey: ""
-      network: "https://api.avax.network/ext/bc/C/rpc"
-      deployedAddress: ""
-      chainid: "43114"
+   testnet:
+   local:
+     privatekey: "242e8a1be01eb4142083e5f2491600c53a1af215840f6800336b1a27c123b927"
+     network: "http://localhost:8545"
+     deployedAddress: "0x6F755946fbF08495f3D5c9309Bc4d15A5f7Ae5f3"
+     chainid: 1337
+   sepoila:
+     privatekey: ""
+     network: "https://rpc.sepolia.dev"
+     deployedAddress: ""
+     chainid: "11155111"
+   mumbai:
+     privatekey: ""
+     network: "https://matic-mumbai.chainstacklabs.com/"
+     deployedAddress: "0xB72Ec384Cb9c94F5cafbe02d3529cF6a0B127524"
+     chainid: "80001"
+   fuji:
+     privatekey: ""
+     network: "https://api.avax-test.network/ext/bc/C/rpc"
+     deployedAddress: "0x2d39d7b66FF5c199DC3B51379C30E08c3Ac97946"
+     chainid: "43113"
+   mainnet:
+   ethereum:
+     privatekey: ""
+     network: ""
+     deployedAddress: ""
+     chainid: ""
+   polygon:
+     network: ""
+     deployedAddress: ""
+     chainid: ""
+   avalanche:
+     privatekey: ""
+     network: "https://api.avax.network/ext/bc/C/rpc"
+     deployedAddress: ""
+     chainid: "43114"
    ```
 
 5. Set up environment variables for private keys. The environment variable names should be in uppercase and follow the pattern `PRIVATEKEY_<NETWORKTYPE>`.
