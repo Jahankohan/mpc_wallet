@@ -29,11 +29,11 @@ func StoreShares(conf config.NetworkConfiguration, userId [32]byte, share string
     instance.StoreShare(auth, userId, stringToBytes32(share))
 }
 
-func RetrieveShares(conf config.NetworkConfiguration, userId string) (string) {
+func RetrieveShares(conf config.NetworkConfiguration, userId string) (string, error) {
     client := Connect(conf)
     instance, err := LoadContract(client, conf.DeployedAddress)
     if err != nil {
-        log.Panic()
+        return "", err
     }
     auth := GetOwnerAuth(conf)
     bind := bind.CallOpts{
@@ -42,5 +42,8 @@ func RetrieveShares(conf config.NetworkConfiguration, userId string) (string) {
         Context: auth.Context,
     }
     share, err := instance.GetShare(&bind, stringToBytes32(userId))
-    return bytes32ToString(share)
+    if err != nil {
+        return "", err
+    }
+    return bytes32ToString(share), nil
 }
