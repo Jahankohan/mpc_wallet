@@ -1,18 +1,47 @@
 package main
 
 import (
+	"fmt"
+	"log"
+
 	"github.com/Jahankohan/mpc_wallet/handlers"
+	"github.com/Jahankohan/mpc_wallet/key_manager"
+	"github.com/Jahankohan/mpc_wallet/transaction"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	router := gin.Default()
 
-	api := router.Group("/api")
-	{
-		api.POST("/register", handlers.RegisterUser)
-		api.POST("/authenticate", handlers.AuthenticateUser)
+
+	// Initialize Ethereum client
+	client, err := ethclient.Dial("https://api.avax-test.network/ext/bc/C/rpc")
+	if err != nil {
+		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
 	}
 
-	router.Run(":8080")
+	// Initialize key manager
+	keyManager := &key_manager.KeyManager{}
+
+	// Initialize transaction builder
+	transactionBuilder := transaction.NewTransactionBuilder(client, keyManager)
+
+	// Initialize the transaction handler
+	transactionHandler := handlers.NewTransactionHandler(transactionBuilder)
+
+	// API routes
+	api := router.Group("/api")
+	{
+		// User routes
+		api.POST("/register", handlers.RegisterUser) // assuming RegisterUser is implemented elsewhere
+		api.POST("/authenticate", handlers.AuthenticateUser) // assuming AuthenticateUser is implemented elsewhere
+		
+		// Transaction route
+		api.POST("/transaction", transactionHandler.HandleTransaction)
+	}
+
+	port := ":8080"
+	fmt.Printf("Server is running on port %s\n", port)
+	router.Run(port)
 }
