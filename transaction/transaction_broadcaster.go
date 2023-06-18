@@ -13,19 +13,16 @@ type TransactionBroadcaster interface {
 	BroadcastTransaction(signedTx *types.Transaction)
 }
 
-type transactionBroadcaster struct{}
+type transactionBroadcaster struct {
+	client *ethclient.Client
+}
 
-func NewTransactionBroadcaster() TransactionBroadcaster {
-	return &transactionBroadcaster{}
+func NewTransactionBroadcaster(client *ethclient.Client) TransactionBroadcaster {
+	return &transactionBroadcaster{client: client}
 }
 
 func (tb *transactionBroadcaster) BroadcastTransaction(signedTx *types.Transaction) {
-	client, err := ethclient.Dial("https://mainnet.infura.io") // example endpoint
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = client.SendTransaction(context.Background(), signedTx)
+	err := tb.client.SendTransaction(context.Background(), signedTx)
 	if err != nil {
 		log.Fatal(err)
 	}

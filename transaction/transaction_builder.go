@@ -58,12 +58,6 @@ func (tb *TransactionBuilder) SendRawTransaction(userID string, confs []config.N
 		return "", err
 	}
 
-	// Broadcast the transaction
-	err = tb.client.SendTransaction(context.Background(), signedTx)
-	if err != nil {
-		return "", err
-	}
-
 	// Log and return the transaction hash
 	txHash := signedTx.Hash().Hex()
 	log.Printf("Transaction sent: %s", txHash)
