@@ -5,10 +5,15 @@ import (
 	"os"
 
 	"github.com/Jahankohan/mpc_wallet/config"
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
 func LoadConfig() config.Configurations {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file")
+	}
 	viper.SetConfigName("config")
 	viper.AddConfigPath("./config")
 	viper.AutomaticEnv()
@@ -18,7 +23,7 @@ func LoadConfig() config.Configurations {
 	if err := viper.ReadInConfig(); err != nil {
 		fmt.Printf("Error reading config file, %s", err)
 	}
-	err := viper.Unmarshal(&configuration)
+	err = viper.Unmarshal(&configuration)
 	if err != nil {
 		fmt.Printf("Unable to decode into struct, %v", err)
 	}
