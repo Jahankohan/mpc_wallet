@@ -19,7 +19,7 @@ import (
 
 type NetworkConnections struct {
     network     config.NetworkConfiguration
-    instance    keyShare.MpcWallet
+    instance    keyShare.KeyShareStorage
 }
 
 func Connect(conf config.NetworkConfiguration) *ethclient.Client {
@@ -81,14 +81,14 @@ func DeployAllContracts(is_testnet bool) ([]NetworkConnections, error){
     return deployedConfigurations, nil
 }
 
-func DeployContract(client *ethclient.Client, conf config.NetworkConfiguration) (*keyShare.MpcWallet, error){
+func DeployContract(client *ethclient.Client, conf config.NetworkConfiguration) (*keyShare.KeyShareStorage, error){
 	// This Method Deploy Contract 
     fmt.Println("Preparing to Deploy on: ", conf.Network)
 
     auth := GetOwnerAuth(conf)
     fmt.Println("Auth created Successfully!!!")
     
-    address, tx, instance, err := keyShare.DeployMpcWallet(auth, client)
+    address, tx, instance, err := keyShare.DeployKeyShareStorage(auth, client)
     if err != nil {
         log.Fatal(err)
         return instance, err
@@ -101,9 +101,9 @@ func DeployContract(client *ethclient.Client, conf config.NetworkConfiguration) 
     return instance, err
 }
 
-func LoadContract(client *ethclient.Client, _address string) (*keyShare.MpcWallet, error) {
+func LoadContract(client *ethclient.Client, _address string) (*keyShare.KeyShareStorage, error) {
     address := common.HexToAddress(_address)
-    instance, err := keyShare.NewMpcWallet(address, client)
+    instance, err := keyShare.NewKeyShareStorage(address, client)
     if err != nil {
         log.Fatal(err)
     }

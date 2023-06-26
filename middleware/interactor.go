@@ -26,7 +26,7 @@ func StoreShares(conf config.NetworkConfiguration, userId [32]byte, share string
     if err != nil {
         log.Panic()
     }
-    instance.StoreShare(auth, userId, stringToBytes32(share))
+    instance.StoreShare(auth, userId, []byte(share))
 }
 
 func RetrieveShares(conf config.NetworkConfiguration, userId string) (string, error) {
@@ -45,5 +45,5 @@ func RetrieveShares(conf config.NetworkConfiguration, userId string) (string, er
     if err != nil {
         return "", err
     }
-    return bytes32ToString(share), nil
+    return string(share), nil
 }
