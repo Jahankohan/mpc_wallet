@@ -66,10 +66,10 @@ func GetNetworkConfigurations(configuration config.Configurations, isTestnet boo
 
 func isTestnetNetwork(networkType string) bool {
 	// You can extend this list with other testnet identifiers
-	return networkType == "sepoila" || networkType == "mumbai" || networkType == "fuji"
+	return networkType == "testnet"
 }
 
 func isMainnetNetwork(networkType string) bool {
 	// You can extend this list with other mainnet identifiers
-	return networkType == "ethereum" || networkType == "polygon" || networkType == "avalanche"
+	return networkType == "mainnet"
 }
