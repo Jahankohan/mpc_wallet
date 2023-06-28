@@ -50,16 +50,22 @@ func (tb *TransactionBuilder) SendRawTransaction(userID string, confs []config.N
 	}
 
 	// Create a new transaction
-	tx := types.NewTransaction(nonce, toAddress, value, 21000, gasPrice, data)
+	tx := types.NewTransaction(nonce, toAddress, value, 52184, gasPrice, data)
 
 	// Sign the transaction
-	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(big.NewInt(1)), privateKey)
+	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(big.NewInt(43113)), privateKey)
 	if err != nil {
 		return "", err
 	}
-
+	pubKey := privateKey.PublicKey
+	pubKeyHex := crypto.PubkeyToAddress(pubKey)
+	fmt.Println("It's the pub key:", pubKeyHex)
 	// Log and return the transaction hash
 	txHash := signedTx.Hash().Hex()
 	log.Printf("Transaction sent: %s", txHash)
+	err = tb.client.SendTransaction(context.Background(), signedTx)
+	if err != nil {
+		return "", err
+	}
 	return txHash, nil
 }
