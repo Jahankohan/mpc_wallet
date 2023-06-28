@@ -49,14 +49,17 @@ func createShareID(userID string, shareIndex int) [32]byte {
 	return shareID
 }
 
+func stringToBytes32(input string) [32]byte {
+	var output [32]byte
+	copy(output[:], []byte(input)[:32])
+	return output
+}
 
 
 func (km *KeyManager) StoreSharesToTheBlockchain(userID string, shares []string, networks []config.NetworkConfiguration) {
 	for i, share := range shares {
-		shareID := createShareID(userID, i+1)
-		for _, network := range networks {
-			middleware.StoreShares(network, shareID, share)
-		}
+		fmt.Println("Share to be stored:", share, ", on chain:", networks[i].Network)
+		middleware.StoreShares(networks[i], stringToBytes32(userID), share)
 	}
 }
 

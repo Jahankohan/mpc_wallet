@@ -7,7 +7,7 @@ contract KeyShareStorage {
     bool private paused;
 
     mapping(address => bool) private acl;
-    mapping(bytes32 => bytes32) private shares;
+    mapping(bytes32 => bytes) private shares;
 
     event ShareStored(bytes32 indexed shareId, address indexed by);
     event ShareUpdated(bytes32 indexed shareId, address indexed by);
@@ -48,17 +48,17 @@ contract KeyShareStorage {
         acl[addr] = false;
     }
 
-    function storeShare(bytes32 shareId, bytes32 share) public onlyAuthorized whenNotPaused {
-        require(shares[shareId] == bytes32(0), "Share ID already exists");
+    function storeShare(bytes32 shareId, bytes memory share) public onlyAuthorized whenNotPaused {
+        require(shares[shareId].length == 0, "Share ID already exists");
         shares[shareId] = share;
         emit ShareStored(shareId, msg.sender);
     }
 
-    function getShare(bytes32 shareId) public view onlyAuthorized whenNotPaused returns (bytes32) {
+    function getShare(bytes32 shareId) public view onlyAuthorized whenNotPaused returns (bytes memory) {
         return shares[shareId];
     }
 
-    function updateShare(bytes32 shareId, bytes32 newShare) public onlyAuthorized whenNotPaused {
+    function updateShare(bytes32 shareId, bytes memory newShare) public onlyAuthorized whenNotPaused {
         shares[shareId] = newShare;
         emit ShareUpdated(shareId, msg.sender);
     }
