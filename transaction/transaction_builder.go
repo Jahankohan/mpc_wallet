@@ -18,14 +18,14 @@ import (
 )
 
 type TransactionBuilder struct {
-	client     *ethclient.Client
-	keyManager *key_manager.KeyManager
+	keyManager    *key_manager.KeyManager
+	networkConfig config.NetworkConfiguration
 }
 
-func NewTransactionBuilder(client *ethclient.Client, keyManager *key_manager.KeyManager) *TransactionBuilder {
+func NewTransactionBuilder(keyManager *key_manager.KeyManager, networkConfig config.NetworkConfiguration) *TransactionBuilder {
 	return &TransactionBuilder{
-		client:     client,
-		keyManager: keyManager,
+		keyManager:    keyManager,
+		networkConfig: networkConfig,
 	}
 }
 
@@ -48,13 +48,20 @@ func (tb *TransactionBuilder) ReadContract(abiStr string, contractAddress common
 		Data: data,
 	}
 
+	// Create an Ethereum client dynamically
+	client, err := ethclient.Dial(tb.networkConfig.Network)
+	if err != nil {
+		return "", fmt.Errorf("failed to connect to Ethereum RPC: %w", err)
+	}
+	defer client.Close()
+
 	// Call the contract
-	result, err := tb.client.CallContract(context.Background(), msg, nil)
+	result, err := client.CallContract(context.Background(), msg, nil)
 	if err != nil {
 		return "", fmt.Errorf("failed to call contract: %w", err)
 	}
 
-	// The result is the raw bytes returned by the contract function. 
+	// The result is the raw bytes returned by the contract function.
 	// You may want to further process this result depending on your application's needs.
 	return string(result), nil
 }
@@ -81,17 +88,22 @@ func (tb *TransactionBuilder) WriteContract(userID string, confs []config.Networ
 	if err != nil {
 		return "", fmt.Errorf("failed to reconstruct private key: %v", err)
 	}
-	log.Println("Reconstructed Key:", privateKey)
-	log.Println("Public Key:", privateKey.PublicKey)
+
+	// Create an Ethereum client dynamically
+	client, err := ethclient.Dial(tb.networkConfig.Network)
+	if err != nil {
+		return "", fmt.Errorf("failed to connect to Ethereum RPC: %w", err)
+	}
+	defer client.Close()
 
 	// Get the nonce for the account
-	nonce, err := tb.client.PendingNonceAt(context.Background(), crypto.PubkeyToAddress(privateKey.PublicKey))
+	nonce, err := client.PendingNonceAt(context.Background(), crypto.PubkeyToAddress(privateKey.PublicKey))
 	if err != nil {
 		return "", err
 	}
 
 	// Get the gas price
-	gasPrice, err := tb.client.SuggestGasPrice(context.Background())
+	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		return "", err
 	}
@@ -101,16 +113,29 @@ func (tb *TransactionBuilder) WriteContract(userID string, confs []config.Networ
 		To:   &contractAddress,
 		Data: data,
 	}
-	gasLimit, err := tb.client.EstimateGas(context.Background(), msg)
+	gasLimit, err := client.EstimateGas(context.Background(), msg)
 	if err != nil {
 		return "", err
 	}
 
 	// Create a new transaction
+	fmt.Println("Data:", data)
 	tx := types.NewTransaction(nonce, contractAddress, big.NewInt(0), gasLimit, gasPrice, data)
 
+	// Convert ChainId from string to *big.Int
+	chainID, success := new(big.Int).SetString(tb.networkConfig.ChainId, 10)
+	if !success {
+		return "", fmt.Errorf("invalid chain ID")
+	}
+
 	// Sign the transaction
-	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(big.NewInt(1)), privateKey)
+	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
+	if err != nil {
+		return "", err
+	}
+
+	// Send the transaction
+	err = client.SendTransaction(context.Background(), signedTx)
 	if err != nil {
 		return "", err
 	}
@@ -118,9 +143,5 @@ func (tb *TransactionBuilder) WriteContract(userID string, confs []config.Networ
 	// Log and return the transaction hash
 	txHash := signedTx.Hash().Hex()
 	log.Printf("Transaction sent: %s", txHash)
-	err = tb.client.SendTransaction(context.Background(), signedTx)
-	if err != nil {
-		return "", err
-	}
 	return txHash, nil
 }
