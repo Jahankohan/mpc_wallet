@@ -64,6 +64,21 @@ func GetNetworkConfigurations(configuration config.Configurations, isTestnet boo
 	return networkConfigs
 }
 
+func GetSpecificNetworkConfiguration(configuration config.Configurations, networkType string, networkName string) (config.NetworkConfiguration, error) {
+	networkConfig, ok := configuration.Networks[networkType]
+	if !ok {
+		return config.NetworkConfiguration{}, fmt.Errorf("network type %s not found in configuration", networkType)
+	}
+	
+	specificConfig, ok := networkConfig[networkName]
+	if !ok {
+		return config.NetworkConfiguration{}, fmt.Errorf("network name %s not found in configuration for network type %s", networkName, networkType)
+	}
+	
+	return specificConfig, nil
+}
+
+
 func isTestnetNetwork(networkType string) bool {
 	// You can extend this list with other testnet identifiers
 	return networkType == "testnet"
