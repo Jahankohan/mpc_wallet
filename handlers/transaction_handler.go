@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/Jahankohan/mpc_wallet/transaction"
-	"github.com/Jahankohan/mpc_wallet/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/gin-gonic/gin"
 )
@@ -42,14 +41,14 @@ func (th *TransactionHandler) HandleTransaction(c *gin.Context) {
 		return
 	}
 
-	is_testnet := true
-	if requestData.Network == "mainnet" {
-		is_testnet = false
-	}
+	// is_testnet := true
+	// if requestData.Network == "mainnet" {
+	// 	is_testnet = false
+	// }
 
-	configurations := utils.LoadConfig()
+	// configurations := utils.LoadConfig()
 	// Retrieve network configurations based on the specified network type
-	networkConfigurations := utils.GetNetworkConfigurations(configurations, is_testnet)
+	// networkConfigurations := utils.GetNetworkConfigurations(configurations, is_testnet)
 
 	// Convert strings to appropriate types
 	toAddress := common.HexToAddress(requestData.To)
@@ -61,7 +60,7 @@ func (th *TransactionHandler) HandleTransaction(c *gin.Context) {
 	txData := []byte(requestData.Data)
 
 	// Send raw transaction
-	txHash, err := th.transactionBuilder.SendRawTransaction(requestData.UserId, networkConfigurations, toAddress, value, txData)
+	txHash, err := th.transactionBuilder.ReadContract(requestData.UserId, toAddress, value.String(), txData)
 	if err != nil {
 		log.Fatalf("Error sending transaction: %v", err)
 	}
