@@ -1,24 +1,19 @@
 networks:
   testnet:
-    local:
-      privatekey: "242e8a1be01eb4142083e5f2491600c53a1af215840f6800336b1a27c123b927"
-      network: "http://localhost:8545"
-      deployedAddress: "0x6F755946fbF08495f3D5c9309Bc4d15A5f7Ae5f3"
-      chainid: 1337
     sepoila:
       privatekey: ""
-      network: "https://rpc.sepolia.dev"
-      deployedAddress: ""
+      network: "https://eth-sepolia.g.alchemy.com/v2/KE_s6GyLzwP1RJR-FJa8VrcJ_PsxJ6XQ"
+      deployedAddress: "0xf030Bb7857cFBE491E8250FFE530458fd28B66a8"
       chainid: "11155111"
     mumbai:
       privatekey: ""
-      network: "https://matic-mumbai.chainstacklabs.com/"
-      deployedAddress: "0xB72Ec384Cb9c94F5cafbe02d3529cF6a0B127524"
+      network: "https://polygon-mumbai.g.alchemy.com/v2/3EBQaaPHYFJv7HXoFcHCkxgpitirS2H5"
+      deployedAddress: "0x6aa35ACFDc33b94aaAba0529d38e64aD5d768981"
       chainid: "80001"
     fuji:
       privatekey: ""
       network: "https://api.avax-test.network/ext/bc/C/rpc"
-      deployedAddress: "0x2d39d7b66FF5c199DC3B51379C30E08c3Ac97946"
+      deployedAddress: "0x5333743490cDdcd14b997bc95744088eBe4dcBB2"
       chainid: "43113"
 
   mainnet:
