@@ -48,9 +48,9 @@ func (th *TransactionHandler) HandleTransaction(networkConfig config.NetworkConf
 	}
 }
 
-func (th *TransactionHandler) HandleMetaTransaction(ctx context.Context, networkConfig config.NetworkConfiguration, keyManager *key_manager.KeyManager, userId string, forwarderAbiStr string, forwarderAddress common.Address, forwarderFunctionName string, nonce *big.Int, contractAddress common.Address, contractAbiStr string, contractFunctionName string, args ...interface{}) (string, error) {
+func (th *TransactionHandler) HandleMetaTransaction(ctx context.Context, networkConfig config.NetworkConfiguration, keyManager *key_manager.KeyManager, userId string, confs []config.NetworkConfiguration, forwarderAbiStr string, forwarderAddress common.Address, forwarderFunctionName string, nonce *big.Int, contractAddress common.Address, contractAbiStr string, contractFunctionName string, args ...interface{}) (string, error) {
 	// Call the forwarder contract with the encoded meta-transaction as a parameter
-	txHash, err := th.metaProcessor.ProcessMetaTransaction(ctx, networkConfig, keyManager, userId, forwarderAbiStr, forwarderAddress, forwarderFunctionName, nonce, contractAddress, contractAbiStr, contractFunctionName, args...)
+	txHash, err := th.metaProcessor.ProcessMetaTransaction(ctx, networkConfig, keyManager, userId, confs, forwarderAbiStr, forwarderAddress, forwarderFunctionName, nonce, contractAddress, contractAbiStr, contractFunctionName, args...)
 	if err != nil {
 	    return "", fmt.Errorf("failed to send meta-transaction through forwarder: %w", err)
 	}
