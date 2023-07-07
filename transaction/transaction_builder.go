@@ -124,7 +124,7 @@ func (tb *TransactionBuilder) WriteContract(userID string, confs []config.Networ
 	tx := types.NewTransaction(nonce, contractAddress, big.NewInt(0), gasLimit, gasPrice, data)
 
 	// Convert ChainId from string to *big.Int
-	chainID, success := new(big.Int).SetString(tb.networkConfig.ChainId, 10)
+	chainID, success := new(big.Int).SetString(tb.networkConfig.ChainID, 10)
 	if !success {
 		return "", fmt.Errorf("invalid chain ID")
 	}
@@ -196,7 +196,7 @@ func (tb *TransactionBuilder) WriteMetaContract(userID string, abiStr string, co
 	tx := types.NewTransaction(nonce, contractAddress, big.NewInt(0), gasLimit, gasPrice, data)
 
 	// Convert ChainId from string to *big.Int
-	chainID, success := new(big.Int).SetString(tb.networkConfig.ChainId, 10)
+	chainID, success := new(big.Int).SetString(tb.networkConfig.ChainID, 10)
 	if !success {
 		return "", fmt.Errorf("invalid chain ID")
 	}
