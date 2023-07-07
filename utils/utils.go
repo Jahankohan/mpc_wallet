@@ -46,10 +46,9 @@ func LoadConfig() config.Configurations {
 	return configuration
 }
 
-
 func GetNetworkConfigurations(configuration config.Configurations, isTestnet bool) []config.NetworkConfiguration {
 	var networkConfigs []config.NetworkConfiguration
-	
+
 	for networkType, networkConfig := range configuration.Networks {
 		if isTestnet && isTestnetNetwork(networkType) {
 			for _, config := range networkConfig {
@@ -69,15 +68,14 @@ func GetSpecificNetworkConfiguration(configuration config.Configurations, networ
 	if !ok {
 		return config.NetworkConfiguration{}, fmt.Errorf("network type %s not found in configuration", networkType)
 	}
-	
+
 	specificConfig, ok := networkConfig[networkName]
 	if !ok {
 		return config.NetworkConfiguration{}, fmt.Errorf("network name %s not found in configuration for network type %s", networkName, networkType)
 	}
-	
+
 	return specificConfig, nil
 }
-
 
 func isTestnetNetwork(networkType string) bool {
 	// You can extend this list with other testnet identifiers
