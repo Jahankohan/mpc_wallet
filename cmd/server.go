@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/Jahankohan/mpc_wallet/handlers"
+	"github.com/Jahankohan/mpc_wallet/key_manager"
 	"github.com/Jahankohan/mpc_wallet/models"
 	"github.com/Jahankohan/mpc_wallet/utils"
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,7 @@ func RunServer() {
 	// Load configurations
 	configuration := utils.LoadConfig()
 	dbConfig := configuration.Database
+	km := key_manager.KeyManager{}
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai",
 		dbConfig.Host, dbConfig.Username, dbConfig.Password, dbConfig.DBName, dbConfig.Port)
@@ -24,7 +26,7 @@ func RunServer() {
 	// Create a new contract handler
 	contractHandler := handlers.NewContractHandler()
 
-	userWalletHandler := handlers.NewUserWalletHandler()
+	userWalletHandler := handlers.NewUserWalletHandler(km, configuration)
 
 	// Create a new gin router
 	router := gin.Default()

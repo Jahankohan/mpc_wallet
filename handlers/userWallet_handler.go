@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -16,8 +17,11 @@ type UserWalletHandler struct {
 	configuration config.Configurations
 }
 
-func NewUserWalletHandler() *UserWalletHandler {
-	return &UserWalletHandler{}
+func NewUserWalletHandler(km key_manager.KeyManager, configuration config.Configurations) *UserWalletHandler {
+	return &UserWalletHandler{
+		km:            km,
+		configuration: configuration,
+	}
 }
 
 func (h *UserWalletHandler) CreateUser(c *gin.Context) {
@@ -29,6 +33,7 @@ func (h *UserWalletHandler) CreateUser(c *gin.Context) {
 	}
 
 	confs := utils.GetNetworkConfigurations(h.configuration, true)
+	fmt.Println("Network Configurations:", confs)
 
 	// Generate private key
 	privateKey := h.km.CreatePrivateKey()
