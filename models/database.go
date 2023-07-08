@@ -23,5 +23,12 @@ func SetupDatabase(dsn string) error {
 		return fmt.Errorf("failed to perform auto migration: %w", err)
 	}
 
+	// Auto-migrate the User wallet model
+	err = db.AutoMigrate(&UserWallet{})
+	if err != nil {
+		return fmt.Errorf("failed to perform auto migration: %w", err)
+	}
+
+
 	return nil
 }
