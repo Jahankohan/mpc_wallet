@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/Jahankohan/mpc_wallet/handlers"
+	"github.com/Jahankohan/mpc_wallet/models"
 	"github.com/Jahankohan/mpc_wallet/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -11,9 +13,12 @@ import (
 func RunServer() {
 	// Load configurations
 	configuration := utils.LoadConfig()
+	dbConfig := configuration.Database
 
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai",
+		dbConfig.Host, dbConfig.Username, dbConfig.Password, dbConfig.DBName, dbConfig.Port)
 	// Set up the database
-	utils.SetupDatabase(configuration.Database)
+	models.SetupDatabase(dsn)
 
 
 	// Create a new contract handler
