@@ -24,12 +24,13 @@ func RunServer() {
 	// Create a new contract handler
 	contractHandler := handlers.NewContractHandler()
 
+	userWalletHandler := handlers.NewUserWalletHandler()
 
 	// Create a new gin router
 	router := gin.Default()
 
 	// Set up the routes
-	SetupRoutes(router, contractHandler)
+	SetupRoutes(router, contractHandler, userWalletHandler)
 
 	// Run the server
 	err := router.Run(":8080")
