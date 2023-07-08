@@ -6,7 +6,7 @@ import (
 )
 
 // SetupRoutes configures the routes for the server
-func SetupRoutes(router *gin.Engine, contractHandler *handlers.ContractHandler) {
+func SetupRoutes(router *gin.Engine, contractHandler *handlers.ContractHandler, userWalletHandler *handlers.UserWalletHandler) {
 	// Contract routes
 	contractRoutes := router.Group("/contracts")
 	{
@@ -19,13 +19,11 @@ func SetupRoutes(router *gin.Engine, contractHandler *handlers.ContractHandler) 
 		contractRoutes.GET("/:id/endpoints/:endpoint", contractHandler.GetEndpointInputVariables)
 	}
 
-	// // User routes
-	// userRoutes := router.Group("/users")
-	// {
-	// 	userRoutes.POST("/", userHandler.CreateUser)
-	// 	userRoutes.GET("/", userHandler.GetAllUsers)
-	// 	userRoutes.GET("/:id", userHandler.GetUserByID)
-	// 	userRoutes.PUT("/:id", userHandler.UpdateUser)
-	// 	userRoutes.DELETE("/:id", userHandler.DeleteUser)
-	// }
+	// User routes
+	userWalletRoutes := router.Group("/users")
+	{
+		userWalletRoutes.POST("/", userWalletHandler.CreateUser)
+		userWalletRoutes.GET("/", userWalletHandler.GetAllUserWallets)
+		userWalletRoutes.GET("/:id", userWalletHandler.GetUserWalletByID)
+	}
 }
