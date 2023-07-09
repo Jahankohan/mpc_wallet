@@ -1,12 +1,14 @@
 package cmd
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/Jahankohan/mpc_wallet/handlers"
+	"github.com/gin-gonic/gin"
 )
 
 // SetupRoutes configures the routes for the server
-func SetupRoutes(router *gin.Engine, contractHandler *handlers.ContractHandler, userWalletHandler *handlers.UserWalletHandler) {
+func SetupRoutes(router *gin.Engine, contractHandler *handlers.ContractHandler, 
+	userWalletHandler *handlers.UserWalletHandler,
+	transactionHandler *handlers.TransactionHandler) {
 	// Contract routes
 	contractRoutes := router.Group("/contracts")
 	{
@@ -26,4 +28,14 @@ func SetupRoutes(router *gin.Engine, contractHandler *handlers.ContractHandler, 
 		userWalletRoutes.GET("/", userWalletHandler.GetAllUserWallets)
 		userWalletRoutes.GET("/:id", userWalletHandler.GetUserWalletByID)
 	}
+
+	// registers the transaction handlers to the given router group.
+	transactionRoutes := router.Group("/transactions")
+	{
+		transactionRoutes.POST("/", transactionHandler.CreateRegularTransaction)
+		transactionRoutes.GET("/:id", transactionHandler.GetTransactionHandler)
+		transactionRoutes.GET("/", transactionHandler.GetAllTransactionsHandler)
+		transactionRoutes.DELETE("/:id", transactionHandler.DeleteTransactionHandler)
+	}
+
 }

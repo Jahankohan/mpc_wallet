@@ -28,11 +28,13 @@ func RunServer() {
 
 	userWalletHandler := handlers.NewUserWalletHandler(km, configuration)
 
+	transactionHandler := handlers.NewTransactionHandler(km, configuration)
+
 	// Create a new gin router
 	router := gin.Default()
 
 	// Set up the routes
-	SetupRoutes(router, contractHandler, userWalletHandler)
+	SetupRoutes(router, contractHandler, userWalletHandler, transactionHandler)
 
 	// Run the server
 	err := router.Run(":8080")
