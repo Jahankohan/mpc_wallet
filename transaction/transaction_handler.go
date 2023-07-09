@@ -18,11 +18,11 @@ type TransactionHandler struct {
 	transactionBuilder    *TransactionBuilder
 }
 
-func NewTransactionHandler(broadcaster TransactionBroadcaster, metaProcessor MetaTransactionProcessor, keyManager *key_manager.KeyManager, networkConfig config.NetworkConfiguration) *TransactionHandler {
+func NewTransactionHandler(broadcaster TransactionBroadcaster, metaProcessor MetaTransactionProcessor, keyManager *key_manager.KeyManager) *TransactionHandler {
 	return &TransactionHandler{
 		broadcaster:        broadcaster,
 		metaProcessor:      metaProcessor,
-		transactionBuilder: NewTransactionBuilder(keyManager, networkConfig),
+		transactionBuilder: NewTransactionBuilder(keyManager),
 	}
 }
 
@@ -41,16 +41,20 @@ func (th *TransactionHandler) HandleTransaction(networkConfig config.NetworkConf
 
 	// If the function is constant, call ReadContract. Otherwise, call WriteContract.
 	if method.StateMutability == "pure" || method.StateMutability == "view" {
-		return th.transactionBuilder.ReadContract(abiStr, contractAddress, functionName, args...)
+		return th.transactionBuilder.ReadContract(abiStr, contractAddress, functionName, networkConfig, args...)
 	} else {
 		// Pass network configurations for key retrieval, this might need to be adjusted based on your setup.
-		return th.transactionBuilder.WriteContract(userId, confs, abiStr, contractAddress, functionName, args...)
+		return th.transactionBuilder.WriteContract(userId, confs, networkConfig, abiStr, contractAddress, functionName, args...)
 	}
 }
 
-func (th *TransactionHandler) HandleMetaTransaction(ctx context.Context, networkConfig config.NetworkConfiguration, keyManager *key_manager.KeyManager, userId string, confs []config.NetworkConfiguration, forwarderAbiStr string, forwarderAddress common.Address, forwarderFunctionName string, nonce *big.Int, contractAddress common.Address, contractAbiStr string, contractFunctionName string, args ...interface{}) (string, error) {
+func (th *TransactionHandler) HandleMetaTransaction(ctx context.Context, networkConfig config.NetworkConfiguration, 
+	keyManager *key_manager.KeyManager, userId string, confs []config.NetworkConfiguration, 
+	forwarderAddress common.Address, nonce *big.Int, contractAddress common.Address, contractAbiStr string, 
+	contractFunctionName string, args ...interface{}) (string, error) {
 	// Call the forwarder contract with the encoded meta-transaction as a parameter
-	txHash, err := th.metaProcessor.ProcessMetaTransaction(ctx, networkConfig, keyManager, userId, confs, forwarderAbiStr, forwarderAddress, forwarderFunctionName, nonce, contractAddress, contractAbiStr, contractFunctionName, args...)
+	txHash, err := th.metaProcessor.ProcessMetaTransaction(ctx, networkConfig, keyManager, userId, confs, 
+		forwarderAddress, nonce, contractAddress, contractAbiStr, contractFunctionName, args...)
 	if err != nil {
 	    return "", fmt.Errorf("failed to send meta-transaction through forwarder: %w", err)
 	}

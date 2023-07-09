@@ -22,11 +22,10 @@ import (
 )
 
 type MetaTransactionProcessor struct {
-	broadcaster TransactionBroadcaster
 	ethClient   *ethclient.Client
 }
 
-func NewMetaTransactionProcessor(broadcaster TransactionBroadcaster, rpcURL string) (*MetaTransactionProcessor, error) {
+func NewMetaTransactionProcessor(rpcURL string) (*MetaTransactionProcessor, error) {
 	// Create Ethereum client
 	ethClient, err := ethclient.Dial(rpcURL)
 	if err != nil {
@@ -34,7 +33,6 @@ func NewMetaTransactionProcessor(broadcaster TransactionBroadcaster, rpcURL stri
 	}
 
 	return &MetaTransactionProcessor{
-		broadcaster: broadcaster,
 		ethClient:   ethClient,
 	}, nil
 }
@@ -174,8 +172,8 @@ func (mtp *MetaTransactionProcessor) SignMetaTransaction(
 
 func (mtp *MetaTransactionProcessor) ProcessMetaTransaction(ctx context.Context, 
 	networkConfig config.NetworkConfiguration, keyManager *key_manager.KeyManager, userId string, 
-	confs []config.NetworkConfiguration, forwarderAbiStr string, forwarderAddress common.Address, 
-	forwarderFunctionName string, nonce *big.Int, contractAddress common.Address, contractAbiStr string, 
+	confs []config.NetworkConfiguration, forwarderAddress common.Address, 
+	nonce *big.Int, contractAddress common.Address, contractAbiStr string, 
 	contractFunctionName string, args ...interface{}) (string, error) {
 	
 	// Get relayer's private key from environment variable
@@ -209,7 +207,8 @@ func (mtp *MetaTransactionProcessor) ProcessMetaTransaction(ctx context.Context,
 	chainId := new(big.Int)
 
 	// Convert the string to big.Int
-	_, ok := chainId.SetString(networkConfig.ChainId, 10) // 10 is the base (decimal in this case)
+	
+	_, ok := chainId.SetString(networkConfig.ChainID, 10) // 10 is the base (decimal in this case)
 	if !ok {
 		fmt.Println("Error in conversion")
 	}

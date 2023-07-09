@@ -31,3 +31,10 @@ networks:
       network: "https://api.avax.network/ext/bc/C/rpc"
       deployedAddress: ""
       chainid: "43114"
+
+database:
+  host: "db"
+  port: "5432"
+  username: "myuser"
+  password: "mypassword"
+  dbname: "mydatabase"

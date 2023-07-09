@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/secp256k1"
 	"github.com/hashicorp/vault/shamir"
@@ -24,6 +25,12 @@ func (km *KeyManager) CreatePrivateKey() *ecdsa.PrivateKey {
 	return privateKey
 }
 
+func (km *KeyManager) GenerateAddress(privateKey *ecdsa.PrivateKey) common.Address{
+	address := crypto.PubkeyToAddress(privateKey.PublicKey)
+	return address
+}
+
+
 func (km *KeyManager) SplitToShares(privateKey *ecdsa.PrivateKey, minimumShares int, totalShares int) ([][]byte, error) {
 	if privateKey == nil {
 		return nil, fmt.Errorf("private key cannot be nil")
@@ -39,6 +46,14 @@ func (km *KeyManager) SplitToShares(privateKey *ecdsa.PrivateKey, minimumShares 
 	}
 
 	return shares, nil
+}
+
+func (km *KeyManager) ConvertByteSliceToStringSlice(byteSlice [][]byte) []string {
+    var stringSlice []string
+    for _, byteArr := range byteSlice {
+        stringSlice = append(stringSlice, string(byteArr))
+    }
+    return stringSlice
 }
 
 
