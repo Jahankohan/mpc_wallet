@@ -22,11 +22,10 @@ import (
 )
 
 type MetaTransactionProcessor struct {
-	broadcaster TransactionBroadcaster
 	ethClient   *ethclient.Client
 }
 
-func NewMetaTransactionProcessor(broadcaster TransactionBroadcaster, rpcURL string) (*MetaTransactionProcessor, error) {
+func NewMetaTransactionProcessor(rpcURL string) (*MetaTransactionProcessor, error) {
 	// Create Ethereum client
 	ethClient, err := ethclient.Dial(rpcURL)
 	if err != nil {
@@ -34,7 +33,6 @@ func NewMetaTransactionProcessor(broadcaster TransactionBroadcaster, rpcURL stri
 	}
 
 	return &MetaTransactionProcessor{
-		broadcaster: broadcaster,
 		ethClient:   ethClient,
 	}, nil
 }

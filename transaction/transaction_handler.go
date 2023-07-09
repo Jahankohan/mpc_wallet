@@ -18,11 +18,11 @@ type TransactionHandler struct {
 	transactionBuilder    *TransactionBuilder
 }
 
-func NewTransactionHandler(broadcaster TransactionBroadcaster, metaProcessor MetaTransactionProcessor, keyManager *key_manager.KeyManager, networkConfig config.NetworkConfiguration) *TransactionHandler {
+func NewTransactionHandler(broadcaster TransactionBroadcaster, metaProcessor MetaTransactionProcessor, keyManager *key_manager.KeyManager) *TransactionHandler {
 	return &TransactionHandler{
 		broadcaster:        broadcaster,
 		metaProcessor:      metaProcessor,
-		transactionBuilder: NewTransactionBuilder(keyManager, networkConfig),
+		transactionBuilder: NewTransactionBuilder(keyManager),
 	}
 }
 
@@ -41,10 +41,10 @@ func (th *TransactionHandler) HandleTransaction(networkConfig config.NetworkConf
 
 	// If the function is constant, call ReadContract. Otherwise, call WriteContract.
 	if method.StateMutability == "pure" || method.StateMutability == "view" {
-		return th.transactionBuilder.ReadContract(abiStr, contractAddress, functionName, args...)
+		return th.transactionBuilder.ReadContract(abiStr, contractAddress, functionName, networkConfig, args...)
 	} else {
 		// Pass network configurations for key retrieval, this might need to be adjusted based on your setup.
-		return th.transactionBuilder.WriteContract(userId, confs, abiStr, contractAddress, functionName, args...)
+		return th.transactionBuilder.WriteContract(userId, confs, networkConfig, abiStr, contractAddress, functionName, args...)
 	}
 }
 

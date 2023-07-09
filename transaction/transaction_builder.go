@@ -20,17 +20,17 @@ import (
 
 type TransactionBuilder struct {
 	keyManager    *key_manager.KeyManager
-	networkConfig config.NetworkConfiguration
+	// networkConfig config.NetworkConfiguration
 }
 
-func NewTransactionBuilder(keyManager *key_manager.KeyManager, networkConfig config.NetworkConfiguration) *TransactionBuilder {
+func NewTransactionBuilder(keyManager *key_manager.KeyManager) *TransactionBuilder {
 	return &TransactionBuilder{
 		keyManager:    keyManager,
-		networkConfig: networkConfig,
 	}
 }
 
-func (tb *TransactionBuilder) ReadContract(abiStr string, contractAddress common.Address, functionName string, args ...interface{}) (string, error) {
+func (tb *TransactionBuilder) ReadContract(abiStr string, contractAddress common.Address, 
+	functionName string, networkConfig config.NetworkConfiguration, args ...interface{}) (string, error) {
 	// Parse the ABI
 	parsedABI, err := abi.JSON(strings.NewReader(abiStr))
 	if err != nil {
@@ -50,7 +50,7 @@ func (tb *TransactionBuilder) ReadContract(abiStr string, contractAddress common
 	}
 
 	// Create an Ethereum client dynamically
-	client, err := ethclient.Dial(tb.networkConfig.Network)
+	client, err := ethclient.Dial(networkConfig.Network)
 	if err != nil {
 		return "", fmt.Errorf("failed to connect to Ethereum RPC: %w", err)
 	}
@@ -67,7 +67,8 @@ func (tb *TransactionBuilder) ReadContract(abiStr string, contractAddress common
 	return string(result), nil
 }
 
-func (tb *TransactionBuilder) WriteContract(userID string, confs []config.NetworkConfiguration, abiStr string, contractAddress common.Address, functionName string, args ...interface{}) (string, error) {
+func (tb *TransactionBuilder) WriteContract(userID string, confs []config.NetworkConfiguration, networkConfig config.NetworkConfiguration,
+	 abiStr string, contractAddress common.Address, functionName string, args ...interface{}) (string, error) {
 	// Parse the ABI
 	parsedABI, err := abi.JSON(strings.NewReader(abiStr))
 	if err != nil {
@@ -91,7 +92,7 @@ func (tb *TransactionBuilder) WriteContract(userID string, confs []config.Networ
 	}
 
 	// Create an Ethereum client dynamically
-	client, err := ethclient.Dial(tb.networkConfig.Network)
+	client, err := ethclient.Dial(networkConfig.Network)
 	if err != nil {
 		return "", fmt.Errorf("failed to connect to Ethereum RPC: %w", err)
 	}
@@ -124,7 +125,7 @@ func (tb *TransactionBuilder) WriteContract(userID string, confs []config.Networ
 	tx := types.NewTransaction(nonce, contractAddress, big.NewInt(0), gasLimit, gasPrice, data)
 
 	// Convert ChainId from string to *big.Int
-	chainID, success := new(big.Int).SetString(tb.networkConfig.ChainID, 10)
+	chainID, success := new(big.Int).SetString(networkConfig.ChainID, 10)
 	if !success {
 		return "", fmt.Errorf("invalid chain ID")
 	}
@@ -147,7 +148,8 @@ func (tb *TransactionBuilder) WriteContract(userID string, confs []config.Networ
 	return txHash, nil
 }
 
-func (tb *TransactionBuilder) WriteMetaContract(userID string, abiStr string, contractAddress common.Address, functionName string, args ...interface{}) (string, error) {
+func (tb *TransactionBuilder) WriteMetaContract(userID string, abiStr string, contractAddress common.Address, networkConfig config.NetworkConfiguration,
+	functionName string, args ...interface{}) (string, error) {
 	// Parse the ABI
 	parsedABI, err := abi.JSON(strings.NewReader(abiStr))
 	if err != nil {
@@ -161,7 +163,7 @@ func (tb *TransactionBuilder) WriteMetaContract(userID string, abiStr string, co
 	}
 
 	// Create an Ethereum client dynamically
-	client, err := ethclient.Dial(tb.networkConfig.Network)
+	client, err := ethclient.Dial(networkConfig.Network)
 	if err != nil {
 		return "", fmt.Errorf("failed to connect to Ethereum RPC: %w", err)
 	}
@@ -196,7 +198,7 @@ func (tb *TransactionBuilder) WriteMetaContract(userID string, abiStr string, co
 	tx := types.NewTransaction(nonce, contractAddress, big.NewInt(0), gasLimit, gasPrice, data)
 
 	// Convert ChainId from string to *big.Int
-	chainID, success := new(big.Int).SetString(tb.networkConfig.ChainID, 10)
+	chainID, success := new(big.Int).SetString(networkConfig.ChainID, 10)
 	if !success {
 		return "", fmt.Errorf("invalid chain ID")
 	}
