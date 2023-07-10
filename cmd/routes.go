@@ -33,6 +33,7 @@ func SetupRoutes(router *gin.Engine, contractHandler *handlers.ContractHandler,
 	transactionRoutes := router.Group("/transactions")
 	{
 		transactionRoutes.POST("/", transactionHandler.CreateRegularTransaction)
+		transactionRoutes.POST("/meta", transactionHandler.CreateMetaTransaction)
 		transactionRoutes.GET("/:id", transactionHandler.GetTransactionHandler)
 		transactionRoutes.GET("/", transactionHandler.GetAllTransactionsHandler)
 		transactionRoutes.DELETE("/:id", transactionHandler.DeleteTransactionHandler)
