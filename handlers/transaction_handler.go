@@ -2,6 +2,7 @@
 package handlers
 
 import (
+	"context"
 	"log"
 	"math/big"
 	"net/http"
@@ -92,7 +93,8 @@ func (h *TransactionHandler) CreateRegularTransaction(c *gin.Context) {
 
 	args := []interface{}{value}
 
-	txHash, err := handler.HandleTransaction(networkConfig, req.UserID, networks, abiStr, contractAddress, req.FunctionName, args...)
+	txHash, err := handler.HandleTransaction(networkConfig, req.UserID, networks, abiStr, contractAddress, 
+		req.FunctionName, args...)
 	if err != nil {
 		log.Fatalf("Failed to handle transaction: %s", err)
 	}
@@ -120,6 +122,95 @@ func (h *TransactionHandler) CreateRegularTransaction(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"result": txHash})
 }
 
+
+func (h *TransactionHandler) CreateMetaTransaction(c *gin.Context) {
+	var req CreateTransactionRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	networkType := "mainnet"
+	if req.IsTestnet {
+		networkType = "testnet"
+	}
+	networkConfig, err := utils.GetSpecificNetworkConfiguration(h.configuration, networkType, req.Network)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	client, err := ethclient.Dial(networkConfig.Network)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to connect to Ethereum network"})
+		return
+	}
+
+	networks := utils.GetNetworkConfigurations(h.configuration, req.IsTestnet)
+
+	// Initialize Transaction Broadcaster and Handler
+	broadcaster := transaction.NewTransactionBroadcaster(client)
+	metaProcessor, err := transaction.NewMetaTransactionProcessor(networkConfig.Network)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to initialize meta transaction processor"})
+		return
+	}
+
+	// Initialize the TransactionHandler with the broadcaster and metaProcessor
+	handler := transaction.NewTransactionHandler(broadcaster, *metaProcessor, &h.km)
+
+	
+	contractID, err := strconv.ParseUint(req.TargetContract, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid contract ID"})
+		return
+	}
+	contract, err := models.GetContractByID(uint(contractID))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve contract"})
+		return
+	}
+	abiStr := contract.ABI
+	contractAddress := common.HexToAddress(contract.Address)
+	contractFunctionName := req.FunctionName
+	value := new(big.Int)
+	value.SetString(req.Args[0], 10)
+
+	args := []interface{}{value}
+
+	forwarderAddress := common.HexToAddress(networkConfig.ForwarderAddress)
+
+	txHash, err := handler.HandleMetaTransaction(context.Background(), networkConfig, &h.km, req.UserID, networks, 
+	forwarderAddress, nil, contractAddress, abiStr, contractFunctionName, args...)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to handle meta transaction"})
+		return
+	}
+
+	argsStr := strings.Join(req.Args, ",")
+
+	// Create the Transaction object
+	transaction := models.Transaction{
+		HashorResult:     txHash,
+		UserID:           req.UserID,
+		Network:          networkType,
+		TargetContract:   contract.Address,
+		TargetFunction:   contractFunctionName,
+		Args:             argsStr,
+		IsMetaTransaction: true,
+		TransactionType:  models.MethodTypeWrite,
+		IsSuccessful:     true,
+		IsTestnet:        req.IsTestnet,
+	}
+
+	// Save the transaction to the database
+	err = models.CreateTransaction(&transaction)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create transaction"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"result": txHash})
+}
 
 
 
