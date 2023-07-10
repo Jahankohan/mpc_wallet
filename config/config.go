@@ -6,10 +6,11 @@ type Configurations struct {
 }
 
 type NetworkConfiguration struct {
-	PrivateKey      string `mapstructure:"privatekey"`
-	Network         string `mapstructure:"network"`
-	DeployedAddress string `mapstructure:"deployedAddress"`
-	ChainID         string `mapstructure:"chainid"`
+	PrivateKey      	string `mapstructure:"privatekey"`
+	Network         	string `mapstructure:"network"`
+	DeployedAddress 	string `mapstructure:"deployedAddress"`
+	ForwarderAddress	string `mapstructure:"forwarderAddress"`
+	ChainID         	string `mapstructure:"chainid"`
 }
 
 type DatabaseConfig struct {
