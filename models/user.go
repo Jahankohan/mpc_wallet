@@ -1,13 +1,19 @@
 package models
 
 import (
+	"time"
 	"gorm.io/gorm"
 )
 
 type User struct {
-	gorm.Model
-	Username string `gorm:"unique"`
-	Password string
+	ID        uint           `gorm:"primaryKey"`
+    Username  string         `gorm:"unique;not null"`
+    Email     string         `gorm:"unique;not null"`
+    Password  string         `gorm:"not null"`
+    Role      string         `gorm:"not null"`
+    CreatedAt time.Time      `gorm:"autoCreateTime"`
+    UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+    DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 func CreateUser(user *User) error {
@@ -59,4 +65,14 @@ func DeleteUser(user *User) error {
 		return result.Error
 	}
 	return nil
+}
+
+// GetUserByUsernameOrEmail retrieves a user by username or email
+func GetUserByUsernameOrEmail(username string) (*User, error) {
+	var user User
+	result := DB.Where("username = ?", username).First(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &user, nil
 }
