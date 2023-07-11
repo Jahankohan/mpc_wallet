@@ -77,6 +77,25 @@ func GetSpecificNetworkConfiguration(configuration config.Configurations, networ
 	return specificConfig, nil
 }
 
+
+func GetNetworkConfigurationsWithName(configuration config.Configurations, isTestnet bool) map[string]config.NetworkConfiguration {
+    networkConfigs := make(map[string]config.NetworkConfiguration)
+
+    for networkType, networkConfig := range configuration.Networks {
+        if isTestnet && isTestnetNetwork(networkType) {
+            for networkName, config := range networkConfig {
+                networkConfigs[networkName] = config
+            }
+        } else if !isTestnet && isMainnetNetwork(networkType) {
+            for networkName, config := range networkConfig {
+                networkConfigs[networkName] = config
+            }
+        }
+    }
+    return networkConfigs
+}
+
+
 func isTestnetNetwork(networkType string) bool {
 	// You can extend this list with other testnet identifiers
 	return networkType == "testnet"
