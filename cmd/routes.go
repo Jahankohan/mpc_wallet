@@ -19,6 +19,8 @@ func SetupRoutes(router *gin.Engine, contractHandler *handlers.ContractHandler,
 		contractRoutes.DELETE("/:id", contractHandler.DeleteContract)
 		contractRoutes.GET("/:id/endpoints", contractHandler.GetContractEndpoints)
 		contractRoutes.GET("/:id/endpoints/:endpoint", contractHandler.GetEndpointInputVariables)
+		contractRoutes.GET("/forwarder", contractHandler.GetContractForwarders)
+		contractRoutes.GET("/keymanager", contractHandler.GetContractKeyManagers)
 	}
 
 	// User routes

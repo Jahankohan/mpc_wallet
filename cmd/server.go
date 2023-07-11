@@ -24,7 +24,7 @@ func RunServer() {
 
 
 	// Create a new contract handler
-	contractHandler := handlers.NewContractHandler()
+	contractHandler := handlers.NewContractHandler(configuration)
 
 	userWalletHandler := handlers.NewUserWalletHandler(km, configuration)
 
