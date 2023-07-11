@@ -1,19 +1,39 @@
 package handlers
 
 import (
+	"context"
+	"fmt"
+	"log"
+	"math/big"
 	"net/http"
 	"strconv"
 	"strings"
 
+	"github.com/Jahankohan/mpc_wallet/balance"
+	"github.com/Jahankohan/mpc_wallet/config"
 	"github.com/Jahankohan/mpc_wallet/models"
+	"github.com/Jahankohan/mpc_wallet/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
 )
 
-type ContractHandler struct{}
+type ContractHandler struct{
+	configuration config.Configurations
+}
 
-func NewContractHandler() *ContractHandler {
-	return &ContractHandler{}
+type ContractInfo struct {
+	ContractAddress string `json:"contract_address"`
+	Network         string `json:"network"`
+	ContractBalance string `json:"contract_balance"`
+}
+
+
+func NewContractHandler(configuration config.Configurations) *ContractHandler {
+	return &ContractHandler{
+		configuration:	configuration,
+	}
 }
 
 func (h *ContractHandler) CreateContract(c *gin.Context) {
@@ -192,4 +212,72 @@ func (ch *ContractHandler) GetEndpointInputVariables(c *gin.Context) {
 
 	// Return the input variables as the response
 	c.JSON(http.StatusOK, gin.H{"inputVariables": inputVariables})
+}
+
+
+func (h *ContractHandler) GetContractKeyManagers(c *gin.Context) {
+	var contracts []ContractInfo
+
+	// Retrieve the contract information from the configuration
+	testConfiguration := utils.GetNetworkConfigurations(h.configuration, true)
+	for _, config := range testConfiguration {
+		contractAddress := config.DeployedAddress
+		contracts = append(contracts, ContractInfo{
+			ContractAddress: contractAddress,
+			Network:         config.Network,
+		})
+	}
+
+	c.JSON(http.StatusOK, contracts)
+}
+
+
+func (h *ContractHandler) GetContractForwarders(c *gin.Context) {
+    var contracts []ContractInfo
+
+    // Retrieve the contract and balance information from the configuration
+    testConfiguration := utils.GetNetworkConfigurationsWithName(h.configuration, true)
+    for network, config := range testConfiguration {
+        contractAddress := config.ForwarderAddress
+        contractBalance := GetBalancesForAllChains(contractAddress, h.configuration, network)
+        contracts = append(contracts, ContractInfo{
+            ContractAddress: contractAddress,
+            Network:         config.Network,
+            ContractBalance: fmt.Sprintf("%f", contractBalance),
+        })
+    }
+
+    c.JSON(http.StatusOK, contracts)
+}
+
+
+func createNetworkClients(configuration config.Configurations, isTestnet bool, chainName string) (*balance.BalanceFetcher){
+	networkType := "mainnet"
+	if isTestnet {
+		networkType = "testnet"
+	}
+	networkConfig, err := utils.GetSpecificNetworkConfiguration(configuration, networkType, chainName)
+	if err != nil {
+		log.Fatal("Network Config Error:",err)
+	}
+	client, err := ethclient.Dial(networkConfig.Network)
+	if err != nil {
+		log.Fatal("Failed to create the client", err)
+	}
+	balanceChecker := balance.NewBalanceFetcher(client)
+	return balanceChecker
+}
+
+func ConvertToFloat64(value *big.Float) float64 {
+	f, _ := value.Float64()
+	return f
+}
+
+func GetBalancesForAllChains(walletAddress string, configuration config.Configurations, networkName string) (float64){
+	balanceChecker := createNetworkClients(configuration, true, networkName)
+
+	balance, _ := balanceChecker.GetNativeTokenBalance(context.Background(), common.HexToAddress(walletAddress))
+
+
+	return ConvertToFloat64(balance)
 }
