@@ -8,7 +8,17 @@ import (
 // SetupRoutes configures the routes for the server
 func SetupRoutes(router *gin.Engine, contractHandler *handlers.ContractHandler, 
 	userWalletHandler *handlers.UserWalletHandler,
-	transactionHandler *handlers.TransactionHandler) {
+	transactionHandler *handlers.TransactionHandler, userHandler *handlers.UserHandler) {
+	
+	// User Routes
+	userRoutes := router.Group("/users")
+	{
+		userRoutes.GET("", userHandler.GetAllUsers)
+		userRoutes.GET("/:id", userHandler.GetUserByID)
+		userRoutes.POST("/register", userHandler.RegisterUser)
+		userRoutes.POST("/login", userHandler.AuthenticateUser)
+	}
+	
 	// Contract routes
 	contractRoutes := router.Group("/contracts")
 	{
@@ -23,8 +33,8 @@ func SetupRoutes(router *gin.Engine, contractHandler *handlers.ContractHandler,
 		contractRoutes.GET("/keymanager", contractHandler.GetContractKeyManagers)
 	}
 
-	// User routes
-	userWalletRoutes := router.Group("/users")
+	// UserWallet routes
+	userWalletRoutes := router.Group("/wallets")
 	{
 		userWalletRoutes.POST("/", userWalletHandler.CreateUser)
 		userWalletRoutes.GET("/", userWalletHandler.GetAllUserWallets)
