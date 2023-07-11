@@ -10,6 +10,7 @@ services:
       - mynetwork
     depends_on:
       - db
+    restart: on-failure
     environment:
       - DB_HOST=db
       - DB_PORT=5432
