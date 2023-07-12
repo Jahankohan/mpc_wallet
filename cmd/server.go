@@ -6,6 +6,7 @@ import (
 
 	"github.com/Jahankohan/mpc_wallet/handlers"
 	"github.com/Jahankohan/mpc_wallet/key_manager"
+	"github.com/Jahankohan/mpc_wallet/middlewares"
 	"github.com/Jahankohan/mpc_wallet/models"
 	"github.com/Jahankohan/mpc_wallet/utils"
 	"github.com/gin-gonic/gin"
@@ -13,6 +14,7 @@ import (
 
 func RunServer() {
 	// Load configurations
+	middlewares.LoadPermissions()
 	configuration := utils.LoadConfig()
 	dbConfig := configuration.Database
 	km := key_manager.KeyManager{}
