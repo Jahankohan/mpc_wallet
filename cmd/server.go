@@ -9,6 +9,7 @@ import (
 	"github.com/Jahankohan/mpc_wallet/middlewares"
 	"github.com/Jahankohan/mpc_wallet/models"
 	"github.com/Jahankohan/mpc_wallet/utils"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -36,6 +37,13 @@ func RunServer() {
 
 	// Create a new gin router
 	router := gin.Default()
+
+	// Set up CORS middleware
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}
+	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
+	router.Use(cors.New(config))
 
 	// Set up the routes
 	SetupRoutes(router, contractHandler, userWalletHandler, transactionHandler, userHandler)
